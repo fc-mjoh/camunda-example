@@ -1,0 +1,79 @@
+# -----------------------------------------------------------
+# Camunda 7 Spring Boot Application Configuration
+# -----------------------------------------------------------
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: camunda-engine
+
+  # H2 in-memory database configuration
+  datasource:
+    url: jdbc:h2:mem:camunda-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # Enable H2 web console for debugging (accessible at /h2-console)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # JPA / Hibernate (not strictly required, but useful if entities are added)
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
+# -----------------------------------------------------------
+# Camunda BPM Configuration
+# -----------------------------------------------------------
+camunda:
+  bpm:
+    # Admin user created on first startup
+    admin-user:
+      id: admin
+      password: admin
+      first-name: Admin
+      last-name: User
+      email: admin@example.com
+
+    # Process engine name
+    process-engine-name: default
+
+    # History level: none, activity, audit, full
+    history-level: full
+
+    # Database schema update strategy: true, false, create, create-drop, drop-create
+    database:
+      schema-update: true
+
+    # Auto-deploy BPMN files from resources
+    deployment-resource-pattern: classpath*:bpmn/**/*.bpmn
+
+    # Authorization settings
+    authorization:
+      enabled: true
+
+    # Job execution
+    job-execution:
+      enabled: true
+      core-pool-size: 3
+      max-pool-size: 10
+
+    # Webapp filter configuration
+    webapp:
+      index-redirect-enabled: true
+
+# -----------------------------------------------------------
+# Logging Configuration
+# -----------------------------------------------------------
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+    org.camunda.bpm: INFO
+    org.camunda.bpm.engine.impl.persistence: WARN

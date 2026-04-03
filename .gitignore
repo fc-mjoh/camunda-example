@@ -1,0 +1,105 @@
+# --------------------------------------------
+# IntelliJ IDEA specific files and directories
+# --------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+!.idea/compiler.xml
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/runConfigurations/
+!.idea/vcs.xml
+!.idea/gradle.xml
+!.idea/libraries/
+
+# --------------------------------------------
+# Gradle specific files and directories
+# --------------------------------------------
+.gradle/
+build/
+!build/reports/
+!build/libs/
+!build/publications/
+gradle/
+gradlew
+gradlew.bat
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# --------------------------------------------
+# Java specific files
+# --------------------------------------------
+*.class
+*.log
+*.ctxt
+*.orig
+*.backup
+*.tmp
+*. Bak
+*.swp
+
+# --------------------------------------------
+# Operating System specific files
+# --------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+*.part
+
+# --------------------------------------------
+# Test and coverage reports
+# --------------------------------------------
+!**/src/test/resources/
+!**/src/test/java/
+!**/src/test/kotlin/
+*.hprof
+coverage/
+reports/
+test-results/
+test-report/
+.jacoco/
+
+# --------------------------------------------
+# Dependencies and local configurations
+# --------------------------------------------
+lib/
+!**/src/main/resources/
+!**/src/main/java/
+!**/src/main/kotlin/
+DependencyCache/
+local.properties
+settings/local.properties
+
+# --------------------------------------------
+# Node.js and frontend tools (if applicable)
+# --------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+.env*.local
