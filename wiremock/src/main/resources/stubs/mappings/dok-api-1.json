@@ -1,0 +1,16 @@
+{
+  "scenarioName": "DokAPI Scenario",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "State 2",
+  "request": {
+    "method": "POST",
+    "urlPath": "/dok-api"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"message\": \"Request was successful\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

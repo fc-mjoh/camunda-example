@@ -1,0 +1,11 @@
+server:
+  port: 8082
+
+wiremock:
+  port: 9090
+  stubs-root: stubs
+
+logging:
+  level:
+    com.reply.camunda.wiremock: DEBUG
+    WireMock: DEBUG

@@ -17,3 +17,10 @@
 | Intermediate Event | ie-     | Timer expired     | ie-timer-expired     |
 | Call Activity      | ca-     | Process payment   | ca-process-payment   |
 | Message Event      | me-     | Message received  | me-message-received  | 
+
+# Wiremock
+
+gradlew :wiremock-server:bootRun
+
+# Camunda-engine
+

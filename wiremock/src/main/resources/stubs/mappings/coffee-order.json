@@ -1,0 +1,13 @@
+{
+  "request": {
+    "urlPath": "/coffee"
+  },
+  "response": {
+    "body": "{\n    \"type\": {{pickRandom '\"Arabica\"' '\"Robusta\"' }},\n    \"inStock\": {{pickRandom '\"in stock\"' '\"ordered\"' '\"empty\"'}}, \n    \"price\": {{randomValue length=4 type='NUMERIC'}}\n}",
+    "transformers": ["response-template"],
+    "status" : 200,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

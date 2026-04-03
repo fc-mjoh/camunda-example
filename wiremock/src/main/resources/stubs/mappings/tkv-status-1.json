@@ -1,0 +1,12 @@
+{
+  "scenarioName": "TKV 2-of-3",
+  "requiredScenarioState": "Started",
+  "request": {
+    "method": "GET",
+    "url": "/tkv"
+  },
+  "response": {
+    "status": 202
+  },
+  "newScenarioState": "Second"
+}

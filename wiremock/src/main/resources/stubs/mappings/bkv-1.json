@@ -1,0 +1,13 @@
+
+{
+  "scenarioName": "BKV 2-of-3",
+  "requiredScenarioState": "Started",
+  "request": {
+    "method": "POST",
+    "url": "/bkv"
+  },
+  "response": {
+    "status": 201
+  },
+  "newScenarioState": "Second"
+}
