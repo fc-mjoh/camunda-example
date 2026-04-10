@@ -17,8 +17,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
     implementation("com.reply.camunda:camunda-workers")
+
+    // SPIN
     implementation("org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}")
     implementation("org.camunda.spin:camunda-spin-dataformat-json-jackson:${camundaVersion}")
+
+    // Javascript Engine
+    implementation("org.openjdk.nashorn:nashorn-core:15.4")
 
     // H2 in-memory database
     runtimeOnly("com.h2database:h2")

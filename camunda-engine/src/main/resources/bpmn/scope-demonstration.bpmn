@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.37.0">
+  <process id="variable_scope_demo" name="Variable Scope Demo" isExecutable="true" camunda:historyTimeToLive="1">
+    <startEvent id="start" name="Prozess gestartet">
+      <extensionElements>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript">
+            // PROZESSINSTANZ-SCOPE: Globale Variable setzen
+            execution.setVariable("globalVar", "Ich bin GLOBAL sichtbar");
+            execution.setVariable("prozessId", execution.getProcessInstanceId());
+
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[START] Globale Variable gesetzt:");
+            java.lang.System.out.println("  globalVar = " + execution.getVariable("globalVar"));
+            java.lang.System.out.println("  prozessId = " + execution.getVariable("prozessId"));
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:executionListener>
+      </extensionElements>
+      <outgoing>flow_to_set_global</outgoing>
+    </startEvent>
+    <serviceTask id="set_global_variable" name="Globale Variable prüfen&#10;(Prozessinstanz-Scope)" camunda:expression="${true}">
+      <extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">
+            // Globale Variable lesen und neue globale setzen
+            execution.setVariable("globalCounter", 1);
+
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[GLOBAL TASK] Prozessinstanz-Scope:");
+            java.lang.System.out.println("  globalVar     = " + execution.getVariable("globalVar"));
+            java.lang.System.out.println("  globalCounter = " + execution.getVariable("globalCounter"));
+            java.lang.System.out.println("  Execution ID  = " + execution.getId());
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:executionListener>
+      </extensionElements>
+      <incoming>flow_to_set_global</incoming>
+      <outgoing>flow_to_subprocess</outgoing>
+    </serviceTask>
+    <subProcess id="embedded_subprocess" name="Embedded Subprocess&#10;(eigener Scope)">
+      <extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">
+            // SUBPROCESS-SCOPE: Lokale Variable - nur hier sichtbar!
+            execution.setVariableLocal("subprocessLocalVar", "Nur im Subprocess sichtbar");
+            execution.setVariableLocal("subprocessCounter", 100);
+
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[SUBPROCESS START] Subprocess-Scope:");
+            java.lang.System.out.println("  subprocessLocalVar = " + execution.getVariableLocal("subprocessLocalVar"));
+            java.lang.System.out.println("  subprocessCounter  = " + execution.getVariableLocal("subprocessCounter"));
+            java.lang.System.out.println("  globalVar (geerbt) = " + execution.getVariable("globalVar"));
+            java.lang.System.out.println("  Execution ID       = " + execution.getId());
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:executionListener>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript">
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[SUBPROCESS END] Subprocess endet:");
+            java.lang.System.out.println("  subprocessLocalVar stirbt jetzt!");
+            java.lang.System.out.println("  subprocessCounter  stirbt jetzt!");
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:executionListener>
+      </extensionElements>
+      <incoming>flow_to_subprocess</incoming>
+      <outgoing>flow_to_parallel</outgoing>
+      <startEvent id="sub_start">
+        <outgoing>flow_sub_to_task</outgoing>
+      </startEvent>
+      <serviceTask id="set_subprocess_variable" name="Lokale Variable setzen&#10;(Subprocess-Scope)" camunda:expression="${true}">
+        <extensionElements>
+          <camunda:executionListener event="start">
+            <camunda:script scriptFormat="javascript">
+              // Im Subprocess: Lokale Var lesen + globale Var lesen
+              java.lang.System.out.println("========================================");
+              java.lang.System.out.println("[SUBPROCESS TASK] Variablen-Sichtbarkeit:");
+              java.lang.System.out.println("  subprocessLocalVar = " + execution.getVariable("subprocessLocalVar"));
+              java.lang.System.out.println("  globalVar          = " + execution.getVariable("globalVar"));
+              java.lang.System.out.println("  globalCounter      = " + execution.getVariable("globalCounter"));
+              java.lang.System.out.println("");
+              java.lang.System.out.println("  &gt;&gt; setVariable('propagatedVar') - wandert nach oben!");
+              execution.setVariable("propagatedVar", "Ich wurde im Subprocess gesetzt, lebe aber GLOBAL");
+              java.lang.System.out.println("  &gt;&gt; setVariableLocal('localOnlyVar') - bleibt hier!");
+              execution.setVariableLocal("localOnlyVar", "Ich sterbe mit dem Subprocess");
+              java.lang.System.out.println("========================================");
+            </camunda:script>
+          </camunda:executionListener>
+        </extensionElements>
+        <incoming>flow_sub_to_task</incoming>
+        <outgoing>flow_sub_to_end</outgoing>
+      </serviceTask>
+      <endEvent id="sub_end">
+        <incoming>flow_sub_to_end</incoming>
+      </endEvent>
+      <sequenceFlow id="flow_sub_to_task" sourceRef="sub_start" targetRef="set_subprocess_variable" />
+      <sequenceFlow id="flow_sub_to_end" sourceRef="set_subprocess_variable" targetRef="sub_end" />
+    </subProcess>
+    <parallelGateway id="parallel_fork" name="Parallel Fork">
+      <incoming>flow_to_parallel</incoming>
+      <outgoing>flow_to_path_a</outgoing>
+      <outgoing>flow_to_path_b</outgoing>
+    </parallelGateway>
+    <serviceTask id="path_a_task" name="Pfad A&#10;Lokale Variable setzen&#10;(Execution-Scope)" camunda:expression="${true}">
+      <extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">
+            // EXECUTION-SCOPE: Nur in diesem parallelen Pfad sichtbar
+            execution.setVariableLocal("executionLocalA", "Nur in Pfad A sichtbar");
+            execution.setVariableLocal("pfadName", "PFAD_A");
+
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[PFAD A] Execution-Scope:");
+            java.lang.System.out.println("  executionLocalA     = " + execution.getVariableLocal("executionLocalA"));
+            java.lang.System.out.println("  pfadName            = " + execution.getVariableLocal("pfadName"));
+            java.lang.System.out.println("  globalVar (geerbt)  = " + execution.getVariable("globalVar"));
+            java.lang.System.out.println("  propagatedVar       = " + execution.getVariable("propagatedVar"));
+            java.lang.System.out.println("  subprocessLocalVar  = " + execution.getVariable("subprocessLocalVar"));
+            java.lang.System.out.println("  ^ sollte NULL sein (Subprocess ist beendet!)");
+            java.lang.System.out.println("  Execution ID        = " + execution.getId());
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:executionListener>
+      </extensionElements>
+      <incoming>flow_to_path_a</incoming>
+      <outgoing>flow_a_to_join</outgoing>
+    </serviceTask>
+    <serviceTask id="path_b_task" name="Pfad B&#10;Lokale Variable setzen&#10;(Execution-Scope)" camunda:expression="${true}">
+      <extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">
+            // EXECUTION-SCOPE: Eigener Scope, kann Pfad A nicht sehen!
+            execution.setVariableLocal("executionLocalB", "Nur in Pfad B sichtbar");
+            execution.setVariableLocal("pfadName", "PFAD_B");
+
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[PFAD B] Execution-Scope:");
+            java.lang.System.out.println("  executionLocalB     = " + execution.getVariableLocal("executionLocalB"));
+            java.lang.System.out.println("  pfadName            = " + execution.getVariableLocal("pfadName"));
+            java.lang.System.out.println("  executionLocalA     = " + execution.getVariable("executionLocalA"));
+            java.lang.System.out.println("  ^ sollte NULL sein (anderer Execution-Scope!)");
+            java.lang.System.out.println("  globalVar (geerbt)  = " + execution.getVariable("globalVar"));
+            java.lang.System.out.println("  Execution ID        = " + execution.getId());
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:executionListener>
+      </extensionElements>
+      <incoming>flow_to_path_b</incoming>
+      <outgoing>flow_b_to_join</outgoing>
+    </serviceTask>
+    <parallelGateway id="parallel_join" name="Parallel Join">
+      <incoming>flow_a_to_join</incoming>
+      <incoming>flow_b_to_join</incoming>
+      <outgoing>flow_to_user_task</outgoing>
+    </parallelGateway>
+    <userTask id="user_task_local" name="User Task&#10;(Task-Scope)" camunda:assignee="demo">
+      <extensionElements>
+        <camunda:taskListener event="create">
+          <camunda:script scriptFormat="javascript">
+            // TASK-SCOPE: Nur während der Task aktiv ist
+            task.setVariableLocal("taskLocalVar", "Nur im Task sichtbar");
+            task.setVariableLocal("bearbeiter", task.getAssignee());
+
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[USER TASK] Task-Scope:");
+            java.lang.System.out.println("  taskLocalVar       = " + task.getVariableLocal("taskLocalVar"));
+            java.lang.System.out.println("  bearbeiter         = " + task.getVariableLocal("bearbeiter"));
+            java.lang.System.out.println("  globalVar (geerbt) = " + task.getVariable("globalVar"));
+            java.lang.System.out.println("  propagatedVar      = " + task.getVariable("propagatedVar"));
+            java.lang.System.out.println("  executionLocalA    = " + task.getVariable("executionLocalA"));
+            java.lang.System.out.println("  ^ sollte NULL sein (Parallel-Pfad beendet!)");
+            java.lang.System.out.println("  Task ID            = " + task.getId());
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:taskListener>
+        <camunda:taskListener event="complete">
+          <camunda:script scriptFormat="javascript">
+            java.lang.System.out.println("========================================");
+            java.lang.System.out.println("[USER TASK COMPLETE] Task-Scope endet:");
+            java.lang.System.out.println("  taskLocalVar stirbt jetzt!");
+            java.lang.System.out.println("========================================");
+          </camunda:script>
+        </camunda:taskListener>
+      </extensionElements>
+      <incoming>flow_to_user_task</incoming>
+      <outgoing>flow_to_read_global</outgoing>
+    </userTask>
+    <serviceTask id="read_global_variable" name="Alle Variablen prüfen&#10;(Finale Übersicht)" camunda:expression="${true}">
+      <extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">
+            java.lang.System.out.println("╔══════════════════════════════════════════╗");
+            java.lang.System.out.println("║       FINALE VARIABLEN-ÜBERSICHT        ║");
+            java.lang.System.out.println("╠══════════════════════════════════════════╣");
+            java.lang.System.out.println("║ GLOBAL (leben noch):                    ║");
+            java.lang.System.out.println("║  globalVar      = " + execution.getVariable("globalVar"));
+            java.lang.System.out.println("║  globalCounter   = " + execution.getVariable("globalCounter"));
+            java.lang.System.out.println("║  propagatedVar   = " + execution.getVariable("propagatedVar"));
+            java.lang.System.out.println("║  prozessId       = " + execution.getVariable("prozessId"));
+            java.lang.System.out.println("╠══════════════════════════════════════════╣");
+            java.lang.System.out.println("║ LOKAL (bereits gestorben):              ║");
+            java.lang.System.out.println("║  subprocessLocalVar = " + execution.getVariable("subprocessLocalVar"));
+            java.lang.System.out.println("║  localOnlyVar       = " + execution.getVariable("localOnlyVar"));
+            java.lang.System.out.println("║  executionLocalA    = " + execution.getVariable("executionLocalA"));
+            java.lang.System.out.println("║  executionLocalB    = " + execution.getVariable("executionLocalB"));
+            java.lang.System.out.println("║  taskLocalVar       = " + execution.getVariable("taskLocalVar"));
+            java.lang.System.out.println("║  ^ Alles NULL - Scopes sind beendet!   ║");
+            java.lang.System.out.println("╚══════════════════════════════════════════╝");
+          </camunda:script>
+        </camunda:executionListener>
+      </extensionElements>
+      <incoming>flow_to_read_global</incoming>
+      <outgoing>flow_to_end</outgoing>
+    </serviceTask>
+    <endEvent id="end" name="Prozess beendet">
+      <incoming>flow_to_end</incoming>
+    </endEvent>
+    <sequenceFlow id="flow_to_set_global" sourceRef="start" targetRef="set_global_variable" />
+    <sequenceFlow id="flow_to_subprocess" sourceRef="set_global_variable" targetRef="embedded_subprocess" />
+    <sequenceFlow id="flow_to_parallel" sourceRef="embedded_subprocess" targetRef="parallel_fork" />
+    <sequenceFlow id="flow_to_path_a" sourceRef="parallel_fork" targetRef="path_a_task" />
+    <sequenceFlow id="flow_to_path_b" sourceRef="parallel_fork" targetRef="path_b_task" />
+    <sequenceFlow id="flow_a_to_join" sourceRef="path_a_task" targetRef="parallel_join" />
+    <sequenceFlow id="flow_b_to_join" sourceRef="path_b_task" targetRef="parallel_join" />
+    <sequenceFlow id="flow_to_user_task" sourceRef="parallel_join" targetRef="user_task_local" />
+    <sequenceFlow id="flow_to_read_global" sourceRef="user_task_local" targetRef="read_global_variable" />
+    <sequenceFlow id="flow_to_end" sourceRef="read_global_variable" targetRef="end" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="variable_scope_demo">
+      <bpmndi:BPMNShape id="Shape_start" bpmnElement="start">
+        <dc:Bounds x="160" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="135" y="238" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_set_global" bpmnElement="set_global_variable">
+        <dc:Bounds x="250" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_subprocess" bpmnElement="embedded_subprocess" isExpanded="true">
+        <dc:Bounds x="410" y="130" width="300" height="180" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_sub_start" bpmnElement="sub_start">
+        <dc:Bounds x="430" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_sub_task" bpmnElement="set_subprocess_variable">
+        <dc:Bounds x="510" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_sub_end" bpmnElement="sub_end">
+        <dc:Bounds x="650" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_sub_to_task" bpmnElement="flow_sub_to_task">
+        <di:waypoint x="466" y="220" />
+        <di:waypoint x="510" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_sub_to_end" bpmnElement="flow_sub_to_end">
+        <di:waypoint x="610" y="220" />
+        <di:waypoint x="650" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Shape_parallel_fork" bpmnElement="parallel_fork" isMarkerVisible="true">
+        <dc:Bounds x="770" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="764" y="245" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_path_a" bpmnElement="path_a_task">
+        <dc:Bounds x="880" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_path_b" bpmnElement="path_b_task">
+        <dc:Bounds x="880" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_parallel_join" bpmnElement="parallel_join" isMarkerVisible="true">
+        <dc:Bounds x="1040" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1035" y="245" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_user_task" bpmnElement="user_task_local">
+        <dc:Bounds x="1150" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_read_global" bpmnElement="read_global_variable">
+        <dc:Bounds x="1310" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end" bpmnElement="end">
+        <dc:Bounds x="1470" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1447" y="238" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_to_set_global" bpmnElement="flow_to_set_global">
+        <di:waypoint x="196" y="220" />
+        <di:waypoint x="250" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_subprocess" bpmnElement="flow_to_subprocess">
+        <di:waypoint x="350" y="220" />
+        <di:waypoint x="410" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_parallel" bpmnElement="flow_to_parallel">
+        <di:waypoint x="710" y="220" />
+        <di:waypoint x="770" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_path_a" bpmnElement="flow_to_path_a">
+        <di:waypoint x="795" y="195" />
+        <di:waypoint x="795" y="120" />
+        <di:waypoint x="880" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_path_b" bpmnElement="flow_to_path_b">
+        <di:waypoint x="795" y="245" />
+        <di:waypoint x="795" y="320" />
+        <di:waypoint x="880" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_a_to_join" bpmnElement="flow_a_to_join">
+        <di:waypoint x="980" y="120" />
+        <di:waypoint x="1065" y="120" />
+        <di:waypoint x="1065" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_b_to_join" bpmnElement="flow_b_to_join">
+        <di:waypoint x="980" y="320" />
+        <di:waypoint x="1065" y="320" />
+        <di:waypoint x="1065" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_user_task" bpmnElement="flow_to_user_task">
+        <di:waypoint x="1090" y="220" />
+        <di:waypoint x="1150" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_read_global" bpmnElement="flow_to_read_global">
+        <di:waypoint x="1250" y="220" />
+        <di:waypoint x="1310" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_to_end" bpmnElement="flow_to_end">
+        <di:waypoint x="1410" y="220" />
+        <di:waypoint x="1470" y="220" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
