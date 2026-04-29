@@ -1,8 +1,28 @@
-# -----------------------------------------------------------
-# Camunda External Task Client Configuration
-# -----------------------------------------------------------
+server:
+  port: 8083
+
 camunda.bpm.client:
-  base-url: http://localhost:8080/engine-rest
-  lock-duration: 10000
-  async-response-timeout: 10000
-  worker-id: camunda-workers-client
+  base-url: http://localhost:8080/engine-rest   # Camunda Engine REST API
+  worker-id: bipro430-worker-01
+  max-tasks: 1
+  async-response-timeout: 10000                 # Long Polling (ms)
+  lock-duration: 20000                          # Lock-Dauer pro Task (ms)
+  subscriptions:
+    listShipments:
+      lock-duration: 20000
+    getShipment:
+      lock-duration: 30000
+    acknowledgeShipment:
+      lock-duration: 10000
+    reportShipmentDefect:
+      lock-duration: 10000
+
+bipro:
+  insurer:
+    # Wird als Fallback genutzt – primär kommt der Wert aus der Prozessvariable
+    default-endpoint: http://localhost:9090/bipro/transfer
+
+logging:
+  level:
+    net.bipro: DEBUG
+    org.camunda: INFO

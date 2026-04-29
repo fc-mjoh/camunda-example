@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bipro/transfer",
+    "headers": {
+      "SOAPAction": {
+        "contains": "getShipment"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "matchesXPath": "//*[local-name()='LieferungsID'][text()='bWFu9ob_PZPKvGr3bjANC6l1C']"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/xml;charset=UTF-8"
+    },
+    "bodyFileName": "getShipment_430-5_response.xml"
+  }
+}

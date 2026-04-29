@@ -1,0 +1,24 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "url": "/bipro/transfer",
+    "headers": {
+      "SOAPAction": {
+        "contains": "acknowledgeShipment"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "matchesXPath": "//*[local-name()='LieferungsID'][text()='bWFu5NoEwUF088YxxX6YyHy2q']"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/xml;charset=UTF-8"
+    },
+    "bodyFileName": "acknowledgeShipment_response.xml"
+  }
+}

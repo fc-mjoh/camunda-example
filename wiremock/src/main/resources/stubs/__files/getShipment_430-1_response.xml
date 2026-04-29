@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+   xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:transfer="http://www.bipro.net/namespace/transfer"
+   xmlns:transfer-vertrag="http://www.bipro.net/namespace/transfer/vertrag"
+   xmlns:nachrichten="http://www.bipro.net/namespace/nachrichten">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <transfer:getShipmentResponse>
+         <transfer:Response>
+            <nachrichten:BiPROVersion>2.8.5.1.0</nachrichten:BiPROVersion>
+            <Status xmlns="http://www.bipro.net/namespace/nachrichten">
+               <ProzessID>MOCK-PROC-002</ProzessID>
+               <Zeitstempel>2026-04-27T08:16:00</Zeitstempel>
+               <StatusID>OK</StatusID>
+               <Schwebe>false</Schwebe>
+            </Status>
+
+            <transfer:Lieferung>
+               <transfer:LieferungsID>bWFu5NoEwUF088YxxX6YyHy2q</transfer:LieferungsID>
+               <transfer:Einstellzeitpunkt>2026-04-27T06:10:00</transfer:Einstellzeitpunkt>
+               <transfer:Kategorie>100001010</transfer:Kategorie>
+
+               <!-- TransferObjekt: 430.1 Neuantrag -->
+               <transfer:Transfer xsi:type="transfer-vertrag:CT_VertragTransfer">
+                  <transfer:ArtID>100001010</transfer:ArtID>
+                  <transfer:Zeitstempel>2026-04-27T06:10:00</transfer:Zeitstempel>
+
+                  <transfer-vertrag:Vertragsdaten>
+                     <transfer-vertrag:Vertragsnummer>VTR-2026-00123</transfer-vertrag:Vertragsnummer>
+                     <transfer-vertrag:Sparte>HUK</transfer-vertrag:Sparte>
+                     <transfer-vertrag:VersicherungsNehmer>
+                        <transfer-vertrag:Name>Mustermann</transfer-vertrag:Name>
+                        <transfer-vertrag:Vorname>Max</transfer-vertrag:Vorname>
+                        <transfer-vertrag:Geburtsdatum>1980-05-15</transfer-vertrag:Geburtsdatum>
+                     </transfer-vertrag:VersicherungsNehmer>
+                     <transfer-vertrag:Versicherungsbeginn>2026-05-01</transfer-vertrag:Versicherungsbeginn>
+                     <transfer-vertrag:Jahresbeitrag>485.60</transfer-vertrag:Jahresbeitrag>
+                  </transfer-vertrag:Vertragsdaten>
+
+                  <!-- PDF Neuantragsformular (Base64 – Dummy) -->
+                  <transfer:Dokument>
+                     <transfer:Dateiname>Neuantrag_VTR-2026-00123.pdf</transfer:Dateiname>
+                     <transfer:MimeType>application/pdf</transfer:MimeType>
+                     <transfer:Inhalt>JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQpNT0NLX1BERl9JTkhBTFQ=</transfer:Inhalt>
+                  </transfer:Dokument>
+
+               </transfer:Transfer>
+            </transfer:Lieferung>
+
+         </transfer:Response>
+      </transfer:getShipmentResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

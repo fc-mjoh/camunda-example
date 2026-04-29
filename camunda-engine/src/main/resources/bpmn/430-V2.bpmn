@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://bipro.net/norm/430" exporter="Camunda Modeler" exporterVersion="5.37.0">
+  <dataStore id="DS_FachDB_001" name="Fach-Datenbank" />
+  <collaboration id="Collab_BiPRO430_MVP_001">
+    <participant id="Part_Consumer_001" name="Consumer (MVP / Makler)" processRef="Proc_BiPRO430_001" />
+    <participant id="Part_Provider_001" name="Provider (Versicherer)" />
+    <messageFlow id="MF_ListReq_001" name="listShipments()" sourceRef="Task_ListShipments_001" targetRef="Part_Provider_001" />
+    <messageFlow id="MF_ListRes_001" name="ShipmentIDs" sourceRef="Part_Provider_001" targetRef="Task_ListShipments_001" />
+    <messageFlow id="MF_GetReq_001" name="getShipment(ID)" sourceRef="Task_GetShipment_001" targetRef="Part_Provider_001" />
+    <messageFlow id="MF_GetRes_001" name="Shipment-Objekt" sourceRef="Part_Provider_001" targetRef="Task_GetShipment_001" />
+    <messageFlow id="MF_AckReq_001" name="acknowledgeShipment(ID)" sourceRef="Task_AckShipment_001" targetRef="Part_Provider_001" />
+    <messageFlow id="MF_DefectReq_001" name="reportShipmentDefect(ID)" sourceRef="Task_ReportDefect_001" targetRef="Part_Provider_001" />
+  </collaboration>
+  <process id="Proc_BiPRO430_001" name="BiPRO 430 Maklerpost Abruf" isExecutable="true" camunda:historyTimeToLive="10">
+    <dataStoreReference id="DSR_GetShipment_001" name="Fach-Datenbank" dataStoreRef="DS_FachDB_001" />
+    <dataStoreReference id="DSR_NotifyNone_001" name="Fach-Datenbank" dataStoreRef="DS_FachDB_001" />
+    <startEvent id="Start_BiPRO430_001" name="Abruf gestartet">
+      <outgoing>SF_01</outgoing>
+    </startEvent>
+    <serviceTask id="Task_ListShipments_001" name="listShipments()" camunda:type="external" camunda:topic="listShipments">
+      <incoming>SF_01</incoming>
+      <outgoing>SF_02</outgoing>
+    </serviceTask>
+    <exclusiveGateway id="GW_Check_001" name="Shipments vorhanden?">
+      <incoming>SF_02</incoming>
+      <outgoing>SF_03_YES</outgoing>
+      <outgoing>SF_03_NO</outgoing>
+    </exclusiveGateway>
+    <subProcess id="SubProc_Shipments_001" name="Shipment verarbeiten (parallel)">
+      <incoming>SF_03_YES</incoming>
+      <outgoing>SF_04</outgoing>
+      <multiInstanceLoopCharacteristics camunda:collection="${shipmentIds}" camunda:elementVariable="currentShipmentId" isSequential="true" >
+        <completionCondition xsi:type="tFormalExpression">${nrOfCompletedInstances == nrOfInstances}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+      <startEvent id="SubStart_001" name="Start">
+        <outgoing>SF_SUB_01</outgoing>
+      </startEvent>
+      <serviceTask id="Task_GetShipment_001" name="getShipment(ID)" camunda:type="external" camunda:topic="getShipment">
+        <incoming>SF_SUB_01</incoming>
+        <outgoing>SF_SUB_02</outgoing>
+        <dataOutputAssociation id="DOA_GetShipment_001">
+          <targetRef>DSR_GetShipment_001</targetRef>
+        </dataOutputAssociation>
+      </serviceTask>
+      <exclusiveGateway id="GW_Valid_001" name="Lieferung OK?">
+        <incoming>SF_SUB_02</incoming>
+        <outgoing>SF_SUB_ACK</outgoing>
+        <outgoing>SF_SUB_DEFECT</outgoing>
+      </exclusiveGateway>
+      <serviceTask id="Task_AckShipment_001" name="acknowledgeShipment(ID)" camunda:type="external" camunda:topic="acknowledgeShipment">
+        <incoming>SF_SUB_ACK</incoming>
+        <outgoing>SF_SUB_03</outgoing>
+      </serviceTask>
+      <serviceTask id="Task_ReportDefect_001" name="reportShipmentDefect(ID)" camunda:type="external" camunda:topic="reportShipmentDefect">
+        <incoming>SF_SUB_DEFECT</incoming>
+        <outgoing>SF_SUB_04</outgoing>
+      </serviceTask>
+      <endEvent id="SubEnd_001" name="Ende">
+        <incoming>SF_SUB_03</incoming>
+        <incoming>SF_SUB_04</incoming>
+      </endEvent>
+      <sequenceFlow id="SF_SUB_01" sourceRef="SubStart_001" targetRef="Task_GetShipment_001" />
+      <sequenceFlow id="SF_SUB_02" sourceRef="Task_GetShipment_001" targetRef="GW_Valid_001" />
+      <sequenceFlow id="SF_SUB_ACK" name="Ja" sourceRef="GW_Valid_001" targetRef="Task_AckShipment_001">
+        <conditionExpression xsi:type="tFormalExpression">${shipmentValid == true}</conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="SF_SUB_DEFECT" name="Nein" sourceRef="GW_Valid_001" targetRef="Task_ReportDefect_001">
+        <conditionExpression xsi:type="tFormalExpression">${shipmentValid == false}</conditionExpression>
+      </sequenceFlow>
+      <sequenceFlow id="SF_SUB_03" sourceRef="Task_AckShipment_001" targetRef="SubEnd_001" />
+      <sequenceFlow id="SF_SUB_04" sourceRef="Task_ReportDefect_001" targetRef="SubEnd_001" />
+    </subProcess>
+    <serviceTask id="Task_NotifyNone_001" name="Ergebnis speichern (NO_SHIPMENTS)" camunda:type="external" camunda:topic="notifyResult">
+      <incoming>SF_03_NO</incoming>
+      <outgoing>SF_06</outgoing>
+      <dataOutputAssociation id="DOA_NotifyNone_001">
+        <targetRef>DSR_NotifyNone_001</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <sequenceFlow id="SF_01" sourceRef="Start_BiPRO430_001" targetRef="Task_ListShipments_001" />
+    <sequenceFlow id="SF_02" sourceRef="Task_ListShipments_001" targetRef="GW_Check_001" />
+    <sequenceFlow id="SF_03_YES" name="Ja" sourceRef="GW_Check_001" targetRef="SubProc_Shipments_001">
+      <conditionExpression xsi:type="tFormalExpression">${shipmentsAvailable == true}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SF_03_NO" name="Nein" sourceRef="GW_Check_001" targetRef="Task_NotifyNone_001">
+      <conditionExpression xsi:type="tFormalExpression">${shipmentsAvailable == false}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SF_04" sourceRef="SubProc_Shipments_001" targetRef="Task_NotifyDone_001" />
+    <sequenceFlow id="SF_05" sourceRef="Task_NotifyDone_001" targetRef="End_BiPRO430_001" />
+    <sequenceFlow id="SF_06" sourceRef="Task_NotifyNone_001" targetRef="End_BiPRO430_001" />
+    <serviceTask id="Task_NotifyDone_001" name="Ergebnis speichern (COMPLETED)" camunda:type="external" camunda:topic="notifyResult">
+      <incoming>SF_04</incoming>
+      <outgoing>SF_05</outgoing>
+      <dataOutputAssociation id="DOA_NotifyDone_001">
+        <targetRef>DSR_NotifyDone_001</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <dataStoreReference id="DSR_NotifyDone_001" name="Fach-Datenbank" dataStoreRef="DS_FachDB_001" />
+    <endEvent id="End_BiPRO430_001" name="Abruf abgeschlossen">
+      <incoming>SF_05</incoming>
+      <incoming>SF_06</incoming>
+    </endEvent>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_001">
+    <bpmndi:BPMNPlane id="BPMNPlane_001" bpmnElement="Collab_BiPRO430_MVP_001">
+      <bpmndi:BPMNShape id="Shape_Part_Consumer" bpmnElement="Part_Consumer_001" isHorizontal="true">
+        <dc:Bounds x="160" y="200" width="1520" height="700" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DSR_GetShipment" bpmnElement="DSR_GetShipment_001" isHorizontal="false">
+        <dc:Bounds x="766" y="570" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="740" y="627" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DSR_NotifyNone" bpmnElement="DSR_NotifyNone_001" isHorizontal="false">
+        <dc:Bounds x="656" y="800" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="630" y="857" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="Start_BiPRO430_001">
+        <dc:Bounds x="232" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="210" y="455" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ListShipments" bpmnElement="Task_ListShipments_001">
+        <dc:Bounds x="320" y="390" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_Check" bpmnElement="GW_Check_001" isMarkerVisible="true">
+        <dc:Bounds x="500" y="405" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="495" y="367.5" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_NotifyDone" bpmnElement="Task_NotifyDone_001">
+        <dc:Bounds x="1390" y="360" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DSR_NotifyDone" bpmnElement="DSR_NotifyDone_001" isHorizontal="false">
+        <dc:Bounds x="1435" y="510" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1413" y="567" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End" bpmnElement="End_BiPRO430_001">
+        <dc:Bounds x="1592" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1573" y="344.5" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Subprocess" bpmnElement="SubProc_Shipments_001" isExpanded="true">
+        <dc:Bounds x="610" y="260" width="710" height="280" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SubStart" bpmnElement="SubStart_001">
+        <dc:Bounds x="642" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GetShipment" bpmnElement="Task_GetShipment_001">
+        <dc:Bounds x="730" y="360" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_GW_Valid" bpmnElement="GW_Valid_001" isMarkerVisible="true">
+        <dc:Bounds x="910" y="375" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="893" y="432" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_AckShipment" bpmnElement="Task_AckShipment_001">
+        <dc:Bounds x="1020" y="300" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ReportDefect" bpmnElement="Task_ReportDefect_001">
+        <dc:Bounds x="1020" y="430" width="120" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SubEnd" bpmnElement="SubEnd_001">
+        <dc:Bounds x="1212" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1176" y="393" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_SF_SUB_01" bpmnElement="SF_SUB_01">
+        <di:waypoint x="678" y="400" />
+        <di:waypoint x="730" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_SUB_02" bpmnElement="SF_SUB_02">
+        <di:waypoint x="850" y="400" />
+        <di:waypoint x="910" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_SUB_ACK" bpmnElement="SF_SUB_ACK">
+        <di:waypoint x="935" y="375" />
+        <di:waypoint x="935" y="340" />
+        <di:waypoint x="1020" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941" y="353" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_SUB_DEFECT" bpmnElement="SF_SUB_DEFECT">
+        <di:waypoint x="935" y="425" />
+        <di:waypoint x="935" y="470" />
+        <di:waypoint x="1020" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941" y="443" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_SUB_03" bpmnElement="SF_SUB_03">
+        <di:waypoint x="1140" y="340" />
+        <di:waypoint x="1230" y="340" />
+        <di:waypoint x="1230" y="382" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_SUB_04" bpmnElement="SF_SUB_04">
+        <di:waypoint x="1140" y="470" />
+        <di:waypoint x="1230" y="470" />
+        <di:waypoint x="1230" y="418" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Shape_NotifyNone" bpmnElement="Task_NotifyNone_001">
+        <dc:Bounds x="610" y="680" width="140" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_SF_01" bpmnElement="SF_01">
+        <di:waypoint x="268" y="430" />
+        <di:waypoint x="320" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_02" bpmnElement="SF_02">
+        <di:waypoint x="440" y="430" />
+        <di:waypoint x="500" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_03_YES" bpmnElement="SF_03_YES">
+        <di:waypoint x="550" y="430" />
+        <di:waypoint x="610" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="555" y="413" width="12" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_03_NO" bpmnElement="SF_03_NO">
+        <di:waypoint x="525" y="455" />
+        <di:waypoint x="525" y="720" />
+        <di:waypoint x="610" y="720" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="531" y="578" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_04" bpmnElement="SF_04">
+        <di:waypoint x="1320" y="400" />
+        <di:waypoint x="1390" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_05" bpmnElement="SF_05">
+        <di:waypoint x="1530" y="400" />
+        <di:waypoint x="1592" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_SF_06" bpmnElement="SF_06">
+        <di:waypoint x="750" y="720" />
+        <di:waypoint x="1610" y="720" />
+        <di:waypoint x="1610" y="418" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Shape_Part_Provider" bpmnElement="Part_Provider_001" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1520" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_DOA_GetShipment" bpmnElement="DOA_GetShipment_001">
+        <di:waypoint x="790" y="440" />
+        <di:waypoint x="790" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_DOA_NotifyDone" bpmnElement="DOA_NotifyDone_001">
+        <di:waypoint x="1460" y="440" />
+        <di:waypoint x="1459" y="510" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_DOA_NotifyNone" bpmnElement="DOA_NotifyNone_001">
+        <di:waypoint x="680" y="760" />
+        <di:waypoint x="680" y="800" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MF_ListReq" bpmnElement="MF_ListReq_001">
+        <di:waypoint x="370" y="390" />
+        <di:waypoint x="370" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="284" y="265" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MF_ListRes" bpmnElement="MF_ListRes_001">
+        <di:waypoint x="395" y="160" />
+        <di:waypoint x="395" y="390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="398" y="265" width="64" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MF_GetReq" bpmnElement="MF_GetReq_001">
+        <di:waypoint x="790" y="360" />
+        <di:waypoint x="790" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="250" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MF_GetRes" bpmnElement="MF_GetRes_001">
+        <di:waypoint x="815" y="160" />
+        <di:waypoint x="815" y="360" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="250" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MF_AckReq" bpmnElement="MF_AckReq_001">
+        <di:waypoint x="1080" y="300" />
+        <di:waypoint x="1080" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="997" y="220" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MF_DefectReq" bpmnElement="MF_DefectReq_001">
+        <di:waypoint x="1080" y="430" />
+        <di:waypoint x="1080" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1105" y="220" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

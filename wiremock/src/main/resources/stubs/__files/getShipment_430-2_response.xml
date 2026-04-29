@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+   xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:transfer="http://www.bipro.net/namespace/transfer"
+   xmlns:transfer-inkasso="http://www.bipro.net/namespace/transfer/inkasso"
+   xmlns:nachrichten="http://www.bipro.net/namespace/nachrichten">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <transfer:getShipmentResponse>
+         <transfer:Response>
+            <nachrichten:BiPROVersion>2.8.5.1.0</nachrichten:BiPROVersion>
+            <Status xmlns="http://www.bipro.net/namespace/nachrichten">
+               <ProzessID>MOCK-PROC-003</ProzessID>
+               <Zeitstempel>2026-04-27T08:17:00</Zeitstempel>
+               <StatusID>OK</StatusID>
+               <Schwebe>false</Schwebe>
+            </Status>
+
+            <transfer:Lieferung>
+               <transfer:LieferungsID>bWFuEL-H21j50Q9dvfgaNTEYa</transfer:LieferungsID>
+               <transfer:Einstellzeitpunkt>2026-04-27T07:02:30</transfer:Einstellzeitpunkt>
+               <transfer:Kategorie>140012003</transfer:Kategorie>
+
+               <!-- TransferObjekt: 430.2 Inkasso-Störfall -->
+               <transfer:Transfer xsi:type="transfer-inkasso:CT_InkassostoerfallTransfer">
+                  <transfer:ArtID>140012003</transfer:ArtID>
+                  <transfer:Zeitstempel>2026-04-27T07:02:30</transfer:Zeitstempel>
+
+                  <transfer-inkasso:Stoerfallart>Bankretoure</transfer-inkasso:Stoerfallart>
+                  <transfer-inkasso:Vertragsnummer>VTR-2025-00987</transfer-inkasso:Vertragsnummer>
+                  <transfer-inkasso:Faelligkeitsdatum>2026-04-01</transfer-inkasso:Faelligkeitsdatum>
+                  <transfer-inkasso:Beitrag>128.50</transfer-inkasso:Beitrag>
+                  <transfer-inkasso:IBAN>DE89370400440532013000</transfer-inkasso:IBAN>
+                  <transfer-inkasso:Rueckgabegrund>AC01</transfer-inkasso:Rueckgabegrund>
+                  <!-- AC01 = Falsche IBAN -->
+                  <transfer-inkasso:VersicherungsNehmer>
+                     <transfer-inkasso:Name>Schmidt</transfer-inkasso:Name>
+                     <transfer-inkasso:Vorname>Anna</transfer-inkasso:Vorname>
+                  </transfer-inkasso:VersicherungsNehmer>
+
+               </transfer:Transfer>
+            </transfer:Lieferung>
+
+         </transfer:Response>
+      </transfer:getShipmentResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

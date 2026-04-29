@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+        xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:transfer="http://www.bipro.net/namespace/transfer"
+        xmlns:nachrichten="http://www.bipro.net/namespace/nachrichten">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <transfer:acknowledgeShipmentResponse>
+            <transfer:Response>
+                <nachrichten:BiPROVersion>2.8.5.1.0</nachrichten:BiPROVersion>
+                <Status xmlns="http://www.bipro.net/namespace/nachrichten">
+                    <ProzessID>MOCK-PROC-ACK</ProzessID>
+                    <Zeitstempel>2026-04-27T08:20:00</Zeitstempel>
+                    <StatusID>OK</StatusID>
+                    <Schwebe>false</Schwebe>
+                    <Meldung>
+                        <ArtID>Hinweis</ArtID>
+                        <MeldungID>04000</MeldungID>
+                        <Text>Lieferung erfolgreich bestätigt.</Text>
+                    </Meldung>
+                </Status>
+            </transfer:Response>
+        </transfer:acknowledgeShipmentResponse>
+    </soapenv:Body>
+</soapenv:Envelope>

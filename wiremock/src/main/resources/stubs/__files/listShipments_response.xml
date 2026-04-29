@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+   xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:transfer="http://www.bipro.net/namespace/transfer"
+   xmlns:nachrichten="http://www.bipro.net/namespace/nachrichten">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <transfer:listShipmentsResponse>
+         <transfer:Response>
+            <nachrichten:BiPROVersion>2.8.5.1.0</nachrichten:BiPROVersion>
+            <Status xmlns="http://www.bipro.net/namespace/nachrichten">
+               <ProzessID>MOCK-PROC-001</ProzessID>
+               <Zeitstempel>2026-04-27T08:15:00</Zeitstempel>
+               <StatusID>OK</StatusID>
+               <Schwebe>false</Schwebe>
+               <Meldung>
+                  <ArtID>Hinweis</ArtID>
+                  <MeldungID>04000</MeldungID>
+                  <Text>Es liegen 3 Lieferungen vor.</Text>
+               </Meldung>
+            </Status>
+
+            <!-- 430.1 – Neuantrag -->
+            <transfer:Lieferung>
+               <transfer:ID>bWFu5NoEwUF088YxxX6YyHy2q</transfer:ID>
+               <transfer:Einstellzeitpunkt>2026-04-27T06:10:00</transfer:Einstellzeitpunkt>
+               <transfer:Kategorie>100001010</transfer:Kategorie>
+               <transfer:AnzahlTransfers>1</transfer:AnzahlTransfers>
+            </transfer:Lieferung>
+
+            <!-- 430.2 – Inkasso-Störfall -->
+            <transfer:Lieferung>
+               <transfer:ID>bWFuEL-H21j50Q9dvfgaNTEYa</transfer:ID>
+               <transfer:Einstellzeitpunkt>2026-04-27T07:02:30</transfer:Einstellzeitpunkt>
+               <transfer:Kategorie>140012003</transfer:Kategorie>
+               <transfer:AnzahlTransfers>1</transfer:AnzahlTransfers>
+            </transfer:Lieferung>
+
+            <!-- 430.5 – Schaden -->
+            <transfer:Lieferung>
+               <transfer:ID>bWFu9ob_PZPKvGr3bjANC6l1C</transfer:ID>
+               <transfer:Einstellzeitpunkt>2026-04-27T07:30:15</transfer:Einstellzeitpunkt>
+               <transfer:Kategorie>150013010</transfer:Kategorie>
+               <transfer:AnzahlTransfers>1</transfer:AnzahlTransfers>
+            </transfer:Lieferung>
+
+         </transfer:Response>
+      </transfer:listShipmentsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

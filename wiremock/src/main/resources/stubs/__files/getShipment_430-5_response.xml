@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+   xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:transfer="http://www.bipro.net/namespace/transfer"
+   xmlns:transfer-schaden="http://www.bipro.net/namespace/transfer/schaden"
+   xmlns:nachrichten="http://www.bipro.net/namespace/nachrichten">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <transfer:getShipmentResponse>
+         <transfer:Response>
+            <nachrichten:BiPROVersion>2.8.5.1.0</nachrichten:BiPROVersion>
+            <Status xmlns="http://www.bipro.net/namespace/nachrichten">
+               <ProzessID>MOCK-PROC-004</ProzessID>
+               <Zeitstempel>2026-04-27T08:18:00</Zeitstempel>
+               <StatusID>OK</StatusID>
+               <Schwebe>false</Schwebe>
+            </Status>
+
+            <transfer:Lieferung>
+               <transfer:LieferungsID>bWFu9ob_PZPKvGr3bjANC6l1C</transfer:LieferungsID>
+               <transfer:Einstellzeitpunkt>2026-04-27T07:30:15</transfer:Einstellzeitpunkt>
+               <transfer:Kategorie>150013010</transfer:Kategorie>
+
+               <!-- TransferObjekt: 430.5 Schaden -->
+               <transfer:Transfer xsi:type="transfer-schaden:CT_SchadenTransfer">
+                  <transfer:ArtID>150013010</transfer:ArtID>
+                  <transfer:Zeitstempel>2026-04-27T07:30:15</transfer:Zeitstempel>
+
+                  <transfer-schaden:Schadennummer>SCH-2026-004711</transfer-schaden:Schadennummer>
+                  <transfer-schaden:Vertragsnummer>VTR-2024-00456</transfer-schaden:Vertragsnummer>
+                  <transfer-schaden:Sparte>Hausrat</transfer-schaden:Sparte>
+                  <transfer-schaden:Schadendatum>2026-04-25</transfer-schaden:Schadendatum>
+                  <transfer-schaden:Schadenhergang>Einbruchdiebstahl – Fenster aufgehebelt</transfer-schaden:Schadenhergang>
+                  <transfer-schaden:Schadensumme>3200.00</transfer-schaden:Schadensumme>
+                  <transfer-schaden:Waehrung>EUR</transfer-schaden:Waehrung>
+                  <transfer-schaden:Status>IN_BEARBEITUNG</transfer-schaden:Status>
+                  <transfer-schaden:VersicherungsNehmer>
+                     <transfer-schaden:Name>Müller</transfer-schaden:Name>
+                     <transfer-schaden:Vorname>Klaus</transfer-schaden:Vorname>
+                  </transfer-schaden:VersicherungsNehmer>
+
+               </transfer:Transfer>
+            </transfer:Lieferung>
+
+         </transfer:Response>
+      </transfer:getShipmentResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
