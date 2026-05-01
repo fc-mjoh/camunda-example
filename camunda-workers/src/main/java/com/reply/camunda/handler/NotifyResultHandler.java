@@ -21,8 +21,8 @@ public class NotifyResultHandler implements ExternalTaskHandler {
     public void execute(ExternalTask task, ExternalTaskService service) {
 
         // Prozessvariablen auslesen
-        List<String> shipmentIds    = task.getVariable("shipmentIds");
-        Boolean shipmentsAvailable  = (Boolean) task.getVariable("shipmentsAvailable");
+        List<String> shipmentIds = task.getVariable("shipmentIds");
+        Boolean shipmentsAvailable = task.getVariable("shipmentsAvailable");
 
         // Ergebnis-Status ableiten
         String status = (shipmentsAvailable != null && shipmentsAvailable)
@@ -30,7 +30,7 @@ public class NotifyResultHandler implements ExternalTaskHandler {
                 : "NO_SHIPMENTS";
 
         String processInstanceId = task.getProcessInstanceId();
-        String businessKey       = task.getBusinessKey();
+        String businessKey = task.getBusinessKey();
 
         log.info("[notifyResult] Prozess: {} | BusinessKey: {} | Status: {} | Shipments: {}",
                 processInstanceId,
@@ -47,10 +47,10 @@ public class NotifyResultHandler implements ExternalTaskHandler {
         } catch (Exception e) {
             log.error("[notifyResult] Fehler beim Persistieren: {}", e.getMessage(), e);
             service.handleFailure(task,
-                "notifyResult fehlgeschlagen",
-                e.getMessage(),
-                3,
-                5000
+                    "notifyResult fehlgeschlagen",
+                    e.getMessage(),
+                    3,
+                    5000
             );
         }
     }
@@ -60,9 +60,9 @@ public class NotifyResultHandler implements ExternalTaskHandler {
      * In Produktion: JPA Repository, JDBC, REST-Call etc.
      */
     private void persistResult(String processInstanceId,
-                                String businessKey,
-                                String status,
-                                List<String> shipmentIds) {
+                               String businessKey,
+                               String status,
+                               List<String> shipmentIds) {
 
         // TODO: Echte Persistierung implementieren, z.B.:
         //   processRunRepository.save(ProcessRun.builder()
