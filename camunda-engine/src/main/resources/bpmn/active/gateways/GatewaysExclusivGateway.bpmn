@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0l89od0" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="GatewaysExclusivGateway" name="Gateways - Exclusiv Gateway" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0d660j6</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_Ungerade" name="Zahl ungerade?">
+      <bpmn:incoming>Flow_0d660j6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_ungerade</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_gerade</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0d660j6" sourceRef="StartEvent_1" targetRef="Gateway_Ungerade" />
+    <bpmn:sequenceFlow id="SequenceFlow_ungerade" name="ungerade" sourceRef="Gateway_Ungerade" targetRef="Task_ungerade">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${value % 2 != 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_gerade" name="gerade" sourceRef="Gateway_Ungerade" targetRef="Task_gerade" />
+    <bpmn:endEvent id="Event_1kcmazp">
+      <bpmn:incoming>Flow_0m2z8xx</bpmn:incoming>
+      <bpmn:incoming>Flow_0u6nd5p</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0m2z8xx" sourceRef="Task_gerade" targetRef="Event_1kcmazp" />
+    <bpmn:sequenceFlow id="Flow_0u6nd5p" sourceRef="Task_ungerade" targetRef="Event_1kcmazp" />
+    <bpmn:userTask id="Task_ungerade" name="Zahl ist ungerade">
+      <bpmn:incoming>SequenceFlow_ungerade</bpmn:incoming>
+      <bpmn:outgoing>Flow_0u6nd5p</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_gerade" name="Zahl ist gerade">
+      <bpmn:incoming>SequenceFlow_gerade</bpmn:incoming>
+      <bpmn:outgoing>Flow_0m2z8xx</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="GatewaysExclusivGateway">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1flzglh_di" bpmnElement="Gateway_Ungerade" isMarkerVisible="true">
+        <dc:Bounds x="275" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="263" y="65" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kcmazp_di" bpmnElement="Event_1kcmazp">
+        <dc:Bounds x="562" y="212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14ap53r_di" bpmnElement="Task_ungerade">
+        <dc:Bounds x="390" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1yklpuj_di" bpmnElement="Task_gerade">
+        <dc:Bounds x="390" y="190" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0d660j6_di" bpmnElement="Flow_0d660j6">
+        <di:waypoint x="218" y="120" />
+        <di:waypoint x="275" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vog2xp_di" bpmnElement="SequenceFlow_ungerade">
+        <di:waypoint x="325" y="120" />
+        <di:waypoint x="390" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="334" y="102" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12pf1jz_di" bpmnElement="SequenceFlow_gerade">
+        <di:waypoint x="300" y="145" />
+        <di:waypoint x="300" y="230" />
+        <di:waypoint x="390" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="312" y="203" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m2z8xx_di" bpmnElement="Flow_0m2z8xx">
+        <di:waypoint x="490" y="230" />
+        <di:waypoint x="562" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u6nd5p_di" bpmnElement="Flow_0u6nd5p">
+        <di:waypoint x="490" y="120" />
+        <di:waypoint x="580" y="120" />
+        <di:waypoint x="580" y="212" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

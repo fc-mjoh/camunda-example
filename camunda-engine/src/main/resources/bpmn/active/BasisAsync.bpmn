@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1kc72q4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="BasisAsynchronousContinuation" name="Basis - Asynchronous Continuation" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:startEvent id="Message_Start_Event_Start_Sync" name="Syncron starten">
+      <bpmn:outgoing>Flow_0rg6ibq</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0flzvdm" messageRef="Message_01so8q0" />
+    </bpmn:startEvent>
+    <bpmn:startEvent id="Message_Start_Event_Start_Async" name="Asynchron starten">
+      <bpmn:outgoing>Flow_0srw24i</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1cmey2f" messageRef="Message_1mvfc3p" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0rg6ibq" sourceRef="Message_Start_Event_Start_Sync" targetRef="UserTask_Check_Message_1" />
+    <bpmn:sequenceFlow id="Flow_0srw24i" sourceRef="Message_Start_Event_Start_Async" targetRef="UserTask_Check_Message_2" />
+    <bpmn:endEvent id="Event_19gztks">
+      <bpmn:incoming>Flow_15lii6n</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_15lii6n" sourceRef="UserTask_Check_Message_1" targetRef="Event_19gztks" />
+    <bpmn:endEvent id="Event_1k7i9vb">
+      <bpmn:incoming>Flow_1hbnlo5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1hbnlo5" sourceRef="UserTask_Check_Message_2" targetRef="Event_1k7i9vb" />
+    <bpmn:userTask id="UserTask_Check_Message_1" name="Nachricht prüfen">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">throw new java.lang.RuntimeException("💥 Manuell erzeugtes Incident!");</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0rg6ibq</bpmn:incoming>
+      <bpmn:outgoing>Flow_15lii6n</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_Check_Message_2" name="Nachricht prüfen" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">throw new java.lang.RuntimeException("💥 Manuell erzeugtes Incident!");</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0srw24i</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hbnlo5</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmn:message id="Message_01so8q0" name="Sync_Message_Start" />
+  <bpmn:message id="Message_1mvfc3p" name="Async_Message_Start" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="BasisAsynchronousContinuation">
+      <bpmndi:BPMNShape id="Event_0v7q5n3_di" bpmnElement="Message_Start_Event_Start_Sync">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="133" y="145" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19gztks_di" bpmnElement="Event_19gztks">
+        <dc:Bounds x="392" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q1f9xy_di" bpmnElement="UserTask_Check_Message_1">
+        <dc:Bounds x="240" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1k7i9vb_di" bpmnElement="Event_1k7i9vb">
+        <dc:Bounds x="392" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1yxn8mh_di" bpmnElement="UserTask_Check_Message_2">
+        <dc:Bounds x="240" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07rf3km_di" bpmnElement="Message_Start_Event_Start_Async">
+        <dc:Bounds x="152" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="127" y="245" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0rg6ibq_di" bpmnElement="Flow_0rg6ibq">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="240" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15lii6n_di" bpmnElement="Flow_15lii6n">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="392" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0srw24i_di" bpmnElement="Flow_0srw24i">
+        <di:waypoint x="188" y="220" />
+        <di:waypoint x="240" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hbnlo5_di" bpmnElement="Flow_1hbnlo5">
+        <di:waypoint x="340" y="220" />
+        <di:waypoint x="392" y="220" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

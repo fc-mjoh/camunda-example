@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_096nzoi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="GatewaysEventGateway" name="Gateways - Event Gateway" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1nrjvr6</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1nrjvr6" sourceRef="StartEvent_1" targetRef="EventGateway_Benachtigung_Timer" />
+    <bpmn:eventBasedGateway id="EventGateway_Benachtigung_Timer" name="Benachtigung oder Timer">
+      <bpmn:incoming>Flow_1nrjvr6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yhgkqn</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0iw0prk</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="TimerCatchEvent_Auftrag_Zeitliche_Grenze" name="Timer abgelaufen">
+      <bpmn:incoming>Flow_0yhgkqn</bpmn:incoming>
+      <bpmn:outgoing>Flow_05w295r</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1xs9ety">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0yhgkqn" sourceRef="EventGateway_Benachtigung_Timer" targetRef="TimerCatchEvent_Auftrag_Zeitliche_Grenze" />
+    <bpmn:sequenceFlow id="Flow_05w295r" sourceRef="TimerCatchEvent_Auftrag_Zeitliche_Grenze" targetRef="UserTask_Timer_abgelaufen" />
+    <bpmn:endEvent id="EndEvent_Event_Gateway">
+      <bpmn:incoming>Flow_1n8ym4a</bpmn:incoming>
+      <bpmn:incoming>Flow_1ybbc7a</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1n8ym4a" sourceRef="UserTask_Timer_abgelaufen" targetRef="EndEvent_Event_Gateway" />
+    <bpmn:sequenceFlow id="Flow_1ybbc7a" sourceRef="UserTask_Benachrichtigung_erhalten" targetRef="EndEvent_Event_Gateway" />
+    <bpmn:userTask id="UserTask_Benachrichtigung_erhalten" name="Benachrichtigung erhalten">
+      <bpmn:incoming>Flow_0k9vezd</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ybbc7a</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_Timer_abgelaufen" name="Timer abgelaufen">
+      <bpmn:incoming>Flow_05w295r</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n8ym4a</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateCatchEvent id="MessageCatchEvent_Benachrichtigung_erhalten" name="Benachrichtigung Erhalten">
+      <bpmn:incoming>Flow_0iw0prk</bpmn:incoming>
+      <bpmn:outgoing>Flow_0k9vezd</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0c4ilpt" messageRef="Message_35157rg" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0iw0prk" sourceRef="EventGateway_Benachtigung_Timer" targetRef="MessageCatchEvent_Benachrichtigung_erhalten" />
+    <bpmn:sequenceFlow id="Flow_0k9vezd" sourceRef="MessageCatchEvent_Benachrichtigung_erhalten" targetRef="UserTask_Benachrichtigung_erhalten" />
+  </bpmn:process>
+  <bpmn:message id="Message_35157rg" name="Auftrag_Erhalten_message" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="GatewaysEventGateway">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0gx2yw3_di" bpmnElement="EventGateway_Benachtigung_Timer">
+        <dc:Bounds x="275" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="267" y="65" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ainzvm_di" bpmnElement="TimerCatchEvent_Auftrag_Zeitliche_Grenze">
+        <dc:Bounds x="422" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="399" y="255" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19ufpjs_di" bpmnElement="EndEvent_Event_Gateway">
+        <dc:Bounds x="762" y="212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fxg08z_di" bpmnElement="UserTask_Benachrichtigung_erhalten">
+        <dc:Bounds x="560" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0kktwl4_di" bpmnElement="UserTask_Timer_abgelaufen">
+        <dc:Bounds x="560" y="190" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ofby0u_di" bpmnElement="MessageCatchEvent_Benachrichtigung_erhalten">
+        <dc:Bounds x="422" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="399" y="145" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1nrjvr6_di" bpmnElement="Flow_1nrjvr6">
+        <di:waypoint x="218" y="120" />
+        <di:waypoint x="275" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yhgkqn_di" bpmnElement="Flow_0yhgkqn">
+        <di:waypoint x="300" y="145" />
+        <di:waypoint x="300" y="230" />
+        <di:waypoint x="422" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05w295r_di" bpmnElement="Flow_05w295r">
+        <di:waypoint x="458" y="230" />
+        <di:waypoint x="560" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n8ym4a_di" bpmnElement="Flow_1n8ym4a">
+        <di:waypoint x="660" y="230" />
+        <di:waypoint x="762" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ybbc7a_di" bpmnElement="Flow_1ybbc7a">
+        <di:waypoint x="660" y="120" />
+        <di:waypoint x="780" y="120" />
+        <di:waypoint x="780" y="212" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0iw0prk_di" bpmnElement="Flow_0iw0prk">
+        <di:waypoint x="325" y="120" />
+        <di:waypoint x="422" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k9vezd_di" bpmnElement="Flow_0k9vezd">
+        <di:waypoint x="458" y="120" />
+        <di:waypoint x="560" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0">
+  <process id="complexGatewayDemo" name="Complex Gateway Demo" isExecutable="true" camunda:historyTimeToLive="1">
+    <startEvent id="StartEvent_1" name="Bestellung&#10;eingegangen">
+      <outgoing>Flow_start_to_split</outgoing>
+    </startEvent>
+    <endEvent id="EndEvent_1" name="Bestellung&#10;genehmigt">
+      <incoming>Flow_join_to_end</incoming>
+    </endEvent>
+    <parallelGateway id="Gateway_parallel_split" name="Parallel Split">
+      <incoming>Flow_start_to_split</incoming>
+      <outgoing>Flow_split_to_manager</outgoing>
+      <outgoing>Flow_split_to_finance</outgoing>
+      <outgoing>Flow_split_to_legal</outgoing>
+    </parallelGateway>
+    <userTask id="Task_Manager" name="Manager&#10;Genehmigung" camunda:assignee="manager">
+      <incoming>Flow_split_to_manager</incoming>
+      <outgoing>Flow_manager_to_complex</outgoing>
+    </userTask>
+    <userTask id="Task_Finance" name="Finanz&#10;Genehmigung" camunda:assignee="finance">
+      <incoming>Flow_split_to_finance</incoming>
+      <outgoing>Flow_finance_to_complex</outgoing>
+    </userTask>
+    <userTask id="Task_Legal" name="Legal&#10;Genehmigung" camunda:assignee="legal">
+      <incoming>Flow_split_to_legal</incoming>
+      <outgoing>Flow_legal_to_complex</outgoing>
+    </userTask>
+    <complexGateway id="Gateway_complex_join" name="Mindestens 2 von 3&#10;Genehmigungen">
+      <incoming>Flow_manager_to_complex</incoming>
+      <incoming>Flow_finance_to_complex</incoming>
+      <incoming>Flow_legal_to_complex</incoming>
+      <outgoing>Flow_join_to_end</outgoing>
+      <activationCondition xsi:type="tFormalExpression">
+        ${nrOfCompletedInstances &gt;= 2}
+      </activationCondition>
+    </complexGateway>
+    <sequenceFlow id="Flow_start_to_split" sourceRef="StartEvent_1" targetRef="Gateway_parallel_split" />
+    <sequenceFlow id="Flow_split_to_manager" sourceRef="Gateway_parallel_split" targetRef="Task_Manager" />
+    <sequenceFlow id="Flow_split_to_finance" sourceRef="Gateway_parallel_split" targetRef="Task_Finance" />
+    <sequenceFlow id="Flow_split_to_legal" sourceRef="Gateway_parallel_split" targetRef="Task_Legal" />
+    <sequenceFlow id="Flow_manager_to_complex" sourceRef="Task_Manager" targetRef="Gateway_complex_join" />
+    <sequenceFlow id="Flow_finance_to_complex" sourceRef="Task_Finance" targetRef="Gateway_complex_join" />
+    <sequenceFlow id="Flow_legal_to_complex" sourceRef="Task_Legal" targetRef="Gateway_complex_join" />
+    <sequenceFlow id="Flow_join_to_end" sourceRef="Gateway_complex_join" targetRef="EndEvent_1" />
+    <textAnnotation id="TextAnnotation_1ww2jxj">
+      <text>Wird in Camunda 7 nicht unterstützt</text>
+    </textAnnotation>
+    <association id="Association_1gcibn3" associationDirection="None" sourceRef="Gateway_complex_join" targetRef="TextAnnotation_1ww2jxj" />
+    <textAnnotation id="TextAnnotation_1erqml2">
+      <text>Dient nur zur Veranschaulichung - Muss auf nachgebaut werden, mit anderen Events</text>
+    </textAnnotation>
+    <association id="Association_0nwzpbe" associationDirection="None" sourceRef="StartEvent_1" targetRef="TextAnnotation_1erqml2" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="complexGatewayDemo">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="312" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="299" y="275" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="832" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="825" y="275" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_parallel_split_di" bpmnElement="Gateway_parallel_split" isMarkerVisible="true">
+        <dc:Bounds x="405" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="399" y="282" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Manager_di" bpmnElement="Task_Manager">
+        <dc:Bounds x="530" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Finance_di" bpmnElement="Task_Finance">
+        <dc:Bounds x="530" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Legal_di" bpmnElement="Task_Legal">
+        <dc:Bounds x="530" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_complex_join_di" bpmnElement="Gateway_complex_join" isMarkerVisible="true">
+        <dc:Bounds x="705" y="225" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="687" y="282" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0nwzpbe_di" bpmnElement="Association_0nwzpbe">
+        <di:waypoint x="318" y="237" />
+        <di:waypoint x="261" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1ww2jxj_di" bpmnElement="TextAnnotation_1ww2jxj">
+        <dc:Bounds x="760" y="140" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_start_to_split_di" bpmnElement="Flow_start_to_split">
+        <di:waypoint x="348" y="250" />
+        <di:waypoint x="405" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_split_to_manager_di" bpmnElement="Flow_split_to_manager">
+        <di:waypoint x="430" y="225" />
+        <di:waypoint x="430" y="140" />
+        <di:waypoint x="530" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_split_to_finance_di" bpmnElement="Flow_split_to_finance">
+        <di:waypoint x="455" y="250" />
+        <di:waypoint x="530" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_split_to_legal_di" bpmnElement="Flow_split_to_legal">
+        <di:waypoint x="430" y="275" />
+        <di:waypoint x="430" y="360" />
+        <di:waypoint x="530" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_manager_to_complex_di" bpmnElement="Flow_manager_to_complex">
+        <di:waypoint x="630" y="140" />
+        <di:waypoint x="730" y="140" />
+        <di:waypoint x="730" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_finance_to_complex_di" bpmnElement="Flow_finance_to_complex">
+        <di:waypoint x="630" y="250" />
+        <di:waypoint x="705" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_legal_to_complex_di" bpmnElement="Flow_legal_to_complex">
+        <di:waypoint x="630" y="360" />
+        <di:waypoint x="730" y="360" />
+        <di:waypoint x="730" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_join_to_end_di" bpmnElement="Flow_join_to_end">
+        <di:waypoint x="755" y="250" />
+        <di:waypoint x="832" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1gcibn3_di" bpmnElement="Association_1gcibn3">
+        <di:waypoint x="741" y="236" />
+        <di:waypoint x="776" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1erqml2_di" bpmnElement="TextAnnotation_1erqml2">
+        <dc:Bounds x="160" y="120" width="245" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_03gfztk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="GatewaysInclusiveGateway" name="Gateways - Inclusive Gateway" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:startEvent id="StartEvent_Gateways_Inclusive_Gateway">
+      <bpmn:outgoing>Flow_0jhb3ez</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0jhb3ez" sourceRef="StartEvent_Gateways_Inclusive_Gateway" targetRef="Gateway" />
+    <bpmn:inclusiveGateway id="Gateway">
+      <bpmn:incoming>Flow_0jhb3ez</bpmn:incoming>
+      <bpmn:outgoing>SequenzeFlow_ungerade</bpmn:outgoing>
+      <bpmn:outgoing>SequenzeFlow_gerade</bpmn:outgoing>
+      <bpmn:outgoing>SequenzeFlow_ist_10</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:sequenceFlow id="SequenzeFlow_ungerade" name="ungerade" sourceRef="Gateway" targetRef="UserTask_stop_1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${value % 2 != 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenzeFlow_gerade" name="gerade&#10;" sourceRef="Gateway" targetRef="UserTask_stop_2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${value % 2 == 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenzeFlow_ist_10" name="10" sourceRef="Gateway" targetRef="UserTask_stop_3">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${value == 10}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="UserTask_stop_1" name="Stop">
+      <bpmn:incoming>SequenzeFlow_ungerade</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pbuv2m</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_stop_2" name="Stop">
+      <bpmn:incoming>SequenzeFlow_gerade</bpmn:incoming>
+      <bpmn:outgoing>Flow_0f1myrg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_stop_3" name="Stop">
+      <bpmn:incoming>SequenzeFlow_ist_10</bpmn:incoming>
+      <bpmn:outgoing>Flow_06hxf7m</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_06hxf7m" sourceRef="UserTask_stop_3" targetRef="Gateway_1luzn72" />
+    <bpmn:sequenceFlow id="Flow_0f1myrg" sourceRef="UserTask_stop_2" targetRef="Gateway_1luzn72" />
+    <bpmn:sequenceFlow id="Flow_0pbuv2m" sourceRef="UserTask_stop_1" targetRef="Gateway_1luzn72" />
+    <bpmn:sequenceFlow id="Flow_1k17vrq" sourceRef="Gateway_1luzn72" targetRef="UserTask_stop_4" />
+    <bpmn:userTask id="UserTask_stop_4" name="Stop">
+      <bpmn:incoming>Flow_1k17vrq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rx8ncl</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0qft5k2">
+      <bpmn:incoming>Flow_0rx8ncl</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0rx8ncl" sourceRef="UserTask_stop_4" targetRef="Event_0qft5k2" />
+    <bpmn:inclusiveGateway id="Gateway_1luzn72">
+      <bpmn:incoming>Flow_06hxf7m</bpmn:incoming>
+      <bpmn:incoming>Flow_0f1myrg</bpmn:incoming>
+      <bpmn:incoming>Flow_0pbuv2m</bpmn:incoming>
+      <bpmn:outgoing>Flow_1k17vrq</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:textAnnotation id="TextAnnotation_1r4a98u">
+      <bpmn:text>Vorsichtig: sollte selber Gatway sein</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1euzcci" associationDirection="None" sourceRef="Gateway_1luzn72" targetRef="TextAnnotation_1r4a98u" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="GatewaysInclusiveGateway">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_Gateways_Inclusive_Gateway">
+        <dc:Bounds x="182" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="159" y="205" width="85" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0y6g9tf_di" bpmnElement="Gateway">
+        <dc:Bounds x="275" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q19o5h_di" bpmnElement="UserTask_stop_1">
+        <dc:Bounds x="390" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04bkamj_di" bpmnElement="UserTask_stop_2">
+        <dc:Bounds x="390" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05ko4r0_di" bpmnElement="UserTask_stop_3">
+        <dc:Bounds x="390" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06zfj5k_di" bpmnElement="UserTask_stop_4">
+        <dc:Bounds x="670" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0qft5k2_di" bpmnElement="Event_0qft5k2">
+        <dc:Bounds x="842" y="302" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0433038_di" bpmnElement="Gateway_1luzn72">
+        <dc:Bounds x="555" y="295" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1euzcci_di" bpmnElement="Association_1euzcci">
+        <di:waypoint x="591" y="306" />
+        <di:waypoint x="626" y="265" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jhb3ez_di" bpmnElement="Flow_0jhb3ez">
+        <di:waypoint x="218" y="100" />
+        <di:waypoint x="275" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08m62zo_di" bpmnElement="SequenzeFlow_ungerade">
+        <di:waypoint x="325" y="100" />
+        <di:waypoint x="390" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="334" y="82" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sljt1z_di" bpmnElement="SequenzeFlow_gerade">
+        <di:waypoint x="300" y="125" />
+        <di:waypoint x="300" y="210" />
+        <di:waypoint x="390" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="298" y="165" width="35" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ycan1z_di" bpmnElement="SequenzeFlow_ist_10">
+        <di:waypoint x="300" y="125" />
+        <di:waypoint x="300" y="320" />
+        <di:waypoint x="390" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="309" y="220" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06hxf7m_di" bpmnElement="Flow_06hxf7m">
+        <di:waypoint x="490" y="320" />
+        <di:waypoint x="555" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f1myrg_di" bpmnElement="Flow_0f1myrg">
+        <di:waypoint x="490" y="210" />
+        <di:waypoint x="580" y="210" />
+        <di:waypoint x="580" y="295" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pbuv2m_di" bpmnElement="Flow_0pbuv2m">
+        <di:waypoint x="490" y="100" />
+        <di:waypoint x="580" y="100" />
+        <di:waypoint x="580" y="295" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1k17vrq_di" bpmnElement="Flow_1k17vrq">
+        <di:waypoint x="605" y="320" />
+        <di:waypoint x="670" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rx8ncl_di" bpmnElement="Flow_0rx8ncl">
+        <di:waypoint x="770" y="320" />
+        <di:waypoint x="842" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1r4a98u_di" bpmnElement="TextAnnotation_1r4a98u">
+        <dc:Bounds x="610" y="210" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
