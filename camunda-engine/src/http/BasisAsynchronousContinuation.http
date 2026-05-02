@@ -1,0 +1,17 @@
+POST http://localhost:8080/engine-rest/message
+Content-Type: application/json
+
+{
+  "messageName": "Sync_Message_Start",
+  "businessKey": "001"
+}
+
+###
+
+POST http://localhost:8080/engine-rest/message
+Content-Type: application/json
+
+{
+  "messageName": "Async_Message_Start",
+  "businessKey": "001"
+}

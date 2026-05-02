@@ -52,7 +52,7 @@ camunda:
       schema-update: true
 
     # Auto-deploy BPMN files from resources
-    deployment-resource-pattern: classpath*:bpmn/**/*.bpmn
+    deployment-resource-pattern: classpath*:bpmn/active/**/*.bpmn
 
     # Authorization settings
     authorization:
