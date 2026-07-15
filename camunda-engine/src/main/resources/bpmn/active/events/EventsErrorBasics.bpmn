@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0m6vj5c" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="EventsErrorBasics" name="Error Basics" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:task id="UndefinedTask_CreateError_1" name="Undefined" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">throw new java.lang.RuntimeException("💥 Manuell erzeugtes Incident!");
+</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_03fanym</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cy50nb</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_03fanym" sourceRef="Message_Start_Event_Start_1" targetRef="UndefinedTask_CreateError_1" />
+    <bpmn:startEvent id="Message_Start_Event_Start_1" name="Start Beispiel RuntimeException">
+      <bpmn:outgoing>Flow_03fanym</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0wf4vtx" messageRef="Message_2dj74ul" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent_RuntimeException" name="Ende Runtime Exception">
+      <bpmn:incoming>Flow_0cy50nb</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0cy50nb" sourceRef="UndefinedTask_CreateError_1" targetRef="EndEvent_RuntimeException" />
+    <bpmn:startEvent id="Message_Start_Event_Start_2" name="Start Beispiel BPMN Error">
+      <bpmn:outgoing>Flow_0ctugwc</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0fjfne8" messageRef="Message_1moleui" />
+    </bpmn:startEvent>
+    <bpmn:task id="UndefinedTask_CreateError_2" name="Undefined" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">throw new org.camunda.bpm.engine.delegate.BpmnError("ERROR_CODE_001", "Fehler bei Verarbeitung!");
+</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ctugwc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1itggcz</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0ctugwc" sourceRef="Message_Start_Event_Start_2" targetRef="UndefinedTask_CreateError_2" />
+    <bpmn:endEvent id="EndEvent_BpmnError_1" name="Ende BpmnError">
+      <bpmn:incoming>Flow_1itggcz</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1itggcz" sourceRef="UndefinedTask_CreateError_2" targetRef="EndEvent_BpmnError_1" />
+    <bpmn:task id="UndefinedTask_CreateError_3" name="Undefined">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">throw new org.camunda.bpm.engine.delegate.BpmnError("ERROR_CODE_001", "Fehler bei Verarbeitung!");</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0hwsoi2</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n5iwex</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0hwsoi2" sourceRef="Message_Start_Event_Start_3" targetRef="UndefinedTask_CreateError_3" />
+    <bpmn:endEvent id="EndEvent_BpmnError_2" name="Ende BpmnError">
+      <bpmn:incoming>Flow_1n5iwex</bpmn:incoming>
+      <bpmn:incoming>Flow_178oqqr</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1n5iwex" sourceRef="UndefinedTask_CreateError_3" targetRef="EndEvent_BpmnError_2" />
+    <bpmn:sequenceFlow id="Flow_0qsf8bu" sourceRef="ErrorBoundaryEvent_StatusCode001" targetRef="UserTask_Stop" />
+    <bpmn:sequenceFlow id="Flow_178oqqr" sourceRef="UserTask_Stop" targetRef="EndEvent_BpmnError_2" />
+    <bpmn:boundaryEvent id="ErrorBoundaryEvent_StatusCode001" attachedToRef="UndefinedTask_CreateError_3">
+      <bpmn:outgoing>Flow_0qsf8bu</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0pul4al" />
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="UserTask_Stop" name="Stop">
+      <bpmn:incoming>Flow_0qsf8bu</bpmn:incoming>
+      <bpmn:outgoing>Flow_178oqqr</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="Message_Start_Event_Start_3" name="Start Beispiel BPMN Error">
+      <bpmn:outgoing>Flow_0hwsoi2</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1elzd29" messageRef="Message_32kbhok" />
+    </bpmn:startEvent>
+    <bpmn:textAnnotation id="TextAnnotation_0ju5ti9">
+      <bpmn:text>Wichtig: Async Cont.! RuntimeException generiert Incident.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1oqz9w6" associationDirection="None" sourceRef="UndefinedTask_CreateError_1" targetRef="TextAnnotation_0ju5ti9" />
+    <bpmn:textAnnotation id="TextAnnotation_18wehu3">
+      <bpmn:text>Ohne entsprechendes Event wird der Prozess still beendet. Das selbe gilt, wenn die Codes nicht übereinstimmen.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_01gg1uf" associationDirection="None" sourceRef="UndefinedTask_CreateError_2" targetRef="TextAnnotation_18wehu3" />
+    <bpmn:association id="Association_01x70nf" associationDirection="None" sourceRef="TextAnnotation_18wehu3" targetRef="UndefinedTask_CreateError_3" />
+    <bpmn:textAnnotation id="TextAnnotation_0cs9kj5">
+      <bpmn:text>Eine leere Codevariable sorgt dafür, dass alle BPMNError gefangen werden</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0esr2wh" associationDirection="None" sourceRef="ErrorBoundaryEvent_StatusCode001" targetRef="TextAnnotation_0cs9kj5" />
+  </bpmn:process>
+  <bpmn:message id="Message_2dj74ul" name="Message_StartExample_1" />
+  <bpmn:message id="Message_1moleui" name="Message_StartExample_2" />
+  <bpmn:message id="Message_32kbhok" name="Message_StartExample_3" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="EventsErrorBasics">
+      <bpmndi:BPMNShape id="Activity_1gqd3ym_di" bpmnElement="UndefinedTask_CreateError_1">
+        <dc:Bounds x="270" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kpafhp_di" bpmnElement="Message_Start_Event_Start_1">
+        <dc:Bounds x="182" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="159" y="225" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0lqmrqh_di" bpmnElement="EndEvent_RuntimeException">
+        <dc:Bounds x="422" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="408" y="225" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0t9n3ri_di" bpmnElement="Message_Start_Event_Start_2">
+        <dc:Bounds x="182" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="375" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qu00cm_di" bpmnElement="UndefinedTask_CreateError_2">
+        <dc:Bounds x="270" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07vjmha_di" bpmnElement="EndEvent_BpmnError_1">
+        <dc:Bounds x="422" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="400" y="375" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0b4x2gd_di" bpmnElement="UndefinedTask_CreateError_3">
+        <dc:Bounds x="270" y="450" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_02garjy_di" bpmnElement="EndEvent_BpmnError_2">
+        <dc:Bounds x="472" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="450" y="442" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0osabrk_di" bpmnElement="UserTask_Stop">
+        <dc:Bounds x="440" y="570" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19m27kk_di" bpmnElement="Message_Start_Event_Start_3">
+        <dc:Bounds x="182" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="515" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_01gg1uf_di" bpmnElement="Association_01gg1uf">
+        <di:waypoint x="370" y="359" />
+        <di:waypoint x="500" y="383" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_01x70nf_di" bpmnElement="Association_01x70nf">
+        <di:waypoint x="500" y="424" />
+        <di:waypoint x="370" y="467" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0ju5ti9_di" bpmnElement="TextAnnotation_0ju5ti9">
+        <dc:Bounds x="370" y="80" width="160" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0cs9kj5_di" bpmnElement="TextAnnotation_0cs9kj5">
+        <dc:Bounds x="160" y="570" width="192" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0hjvw4k_di" bpmnElement="ErrorBoundaryEvent_StatusCode001">
+        <dc:Bounds x="352" y="512" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_03fanym_di" bpmnElement="Flow_03fanym">
+        <di:waypoint x="218" y="200" />
+        <di:waypoint x="270" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cy50nb_di" bpmnElement="Flow_0cy50nb">
+        <di:waypoint x="370" y="200" />
+        <di:waypoint x="422" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ctugwc_di" bpmnElement="Flow_0ctugwc">
+        <di:waypoint x="218" y="350" />
+        <di:waypoint x="270" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1itggcz_di" bpmnElement="Flow_1itggcz">
+        <di:waypoint x="370" y="350" />
+        <di:waypoint x="422" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hwsoi2_di" bpmnElement="Flow_0hwsoi2">
+        <di:waypoint x="218" y="490" />
+        <di:waypoint x="270" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n5iwex_di" bpmnElement="Flow_1n5iwex">
+        <di:waypoint x="370" y="490" />
+        <di:waypoint x="472" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qsf8bu_di" bpmnElement="Flow_0qsf8bu">
+        <di:waypoint x="370" y="548" />
+        <di:waypoint x="370" y="610" />
+        <di:waypoint x="440" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_178oqqr_di" bpmnElement="Flow_178oqqr">
+        <di:waypoint x="490" y="570" />
+        <di:waypoint x="490" y="508" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1oqz9w6_di" bpmnElement="Association_1oqz9w6">
+        <di:waypoint x="358" y="160" />
+        <di:waypoint x="377" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0esr2wh_di" bpmnElement="Association_0esr2wh">
+        <di:waypoint x="353" y="536" />
+        <di:waypoint x="254" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_18wehu3_di" bpmnElement="TextAnnotation_18wehu3">
+        <dc:Bounds x="500" y="370" width="200" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1spj5s7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="EventsMessageCatch" name="Events - Message Catch" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:sequenceFlow id="Flow_0p0l05y" sourceRef="StartEvent_EventsMessageCatch" targetRef="MessageCatchEvent_wait" />
+    <bpmn:intermediateCatchEvent id="MessageCatchEvent_wait" name="wait">
+      <bpmn:incoming>Flow_0p0l05y</bpmn:incoming>
+      <bpmn:outgoing>Flow_1h4zdnw</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_12k5mmf" messageRef="Message_2aaiqqj" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1h4zdnw" sourceRef="MessageCatchEvent_wait" targetRef="UserTask_Stop" />
+    <bpmn:endEvent id="EndEvent_EventsMessageCatch" name="End Message Catch">
+      <bpmn:incoming>Flow_11ruqpp</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_11ruqpp" sourceRef="UserTask_Stop" targetRef="EndEvent_EventsMessageCatch" />
+    <bpmn:userTask id="UserTask_Stop" name="Stop">
+      <bpmn:incoming>Flow_1h4zdnw</bpmn:incoming>
+      <bpmn:outgoing>Flow_11ruqpp</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="StartEvent_EventsMessageCatch" name="Start Message Catch">
+      <bpmn:outgoing>Flow_0p0l05y</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1ylmmnz" messageRef="Message_2l05pga" />
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_2l05pga" name="Message_StartMessageCatch" />
+  <bpmn:message id="Message_2aaiqqj" name="Message_CatchMessage" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="EventsMessageCatch">
+      <bpmndi:BPMNShape id="Event_12czidx_di" bpmnElement="MessageCatchEvent_wait">
+        <dc:Bounds x="272" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="280" y="125" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ryap76_di" bpmnElement="EndEvent_EventsMessageCatch">
+        <dc:Bounds x="532" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="518" y="125" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a2iyjr_di" bpmnElement="UserTask_Stop">
+        <dc:Bounds x="370" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0cooxl1_di" bpmnElement="StartEvent_EventsMessageCatch">
+        <dc:Bounds x="182" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="125" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0p0l05y_di" bpmnElement="Flow_0p0l05y">
+        <di:waypoint x="218" y="100" />
+        <di:waypoint x="272" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1h4zdnw_di" bpmnElement="Flow_1h4zdnw">
+        <di:waypoint x="308" y="100" />
+        <di:waypoint x="370" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11ruqpp_di" bpmnElement="Flow_11ruqpp">
+        <di:waypoint x="470" y="100" />
+        <di:waypoint x="532" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

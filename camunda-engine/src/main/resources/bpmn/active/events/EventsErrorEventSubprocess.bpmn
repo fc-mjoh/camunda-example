@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1kyn6yt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="EventsErrorEventSubprocess" name="Error Event Subprocess" isExecutable="true" camunda:historyTimeToLive="1">
+    <bpmn:startEvent id="StartEvent_EventsErrorEventSubprocess" name="Start EventsErrorEventSubprocess">
+      <bpmn:outgoing>Flow_1swm9hk</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="UdefinedTask_CreateBpmnError" name="Erzeuge BpmnError ERROR_CODE_001">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="javascript">throw new org.camunda.bpm.engine.delegate.BpmnError("ERROR_CODE_001", "Fehler bei Verarbeitung!");</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1swm9hk</bpmn:incoming>
+      <bpmn:outgoing>Flow_16c9vud</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1swm9hk" sourceRef="StartEvent_EventsErrorEventSubprocess" targetRef="UdefinedTask_CreateBpmnError" />
+    <bpmn:endEvent id="EndEvent_EventsErrorEventSubprocess" name="Ende EventsErrorEventSubprocess">
+      <bpmn:incoming>Flow_16c9vud</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_16c9vud" sourceRef="UdefinedTask_CreateBpmnError" targetRef="EndEvent_EventsErrorEventSubprocess" />
+    <bpmn:subProcess id="EventSubProcess_EventsErrorEventSubprocess" name="Sub-Prozess EventsErrorEventSubprocess" triggeredByEvent="true">
+      <bpmn:sequenceFlow id="Flow_0qt8agg" sourceRef="StartEvent_SubProcessEventsErrorEventSubprocess" targetRef="UserTask_Stop" />
+      <bpmn:endEvent id="EndEvent_SubProcessEventsErrorEventSubprocess" name="Ende SubProcessEventsErrorEventSubprocess">
+        <bpmn:incoming>Flow_1qf5dbx</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1qf5dbx" sourceRef="UserTask_Stop" targetRef="EndEvent_SubProcessEventsErrorEventSubprocess" />
+      <bpmn:userTask id="UserTask_Stop" name="Stop">
+        <bpmn:incoming>Flow_0qt8agg</bpmn:incoming>
+        <bpmn:outgoing>Flow_1qf5dbx</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:startEvent id="StartEvent_SubProcessEventsErrorEventSubprocess" name="Start SubProcessEventsErrorEventSubprocess">
+        <bpmn:outgoing>Flow_0qt8agg</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_1yq1unr" camunda:errorCodeVariable="ERROR_CODE_001" />
+      </bpmn:startEvent>
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="EventsErrorEventSubprocess">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_EventsErrorEventSubprocess">
+        <dc:Bounds x="182" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="125" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0skdvi5_di" bpmnElement="UdefinedTask_CreateBpmnError">
+        <dc:Bounds x="270" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_187guni_di" bpmnElement="EndEvent_EventsErrorEventSubprocess">
+        <dc:Bounds x="422" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="398" y="125" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0n2o3ls_di" bpmnElement="EventSubProcess_EventsErrorEventSubprocess" isExpanded="true">
+        <dc:Bounds x="145" y="230" width="350" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0jmknro_di" bpmnElement="EndEvent_SubProcessEventsErrorEventSubprocess">
+        <dc:Bounds x="437" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="411" y="355" width="88" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1r02e91_di" bpmnElement="UserTask_Stop">
+        <dc:Bounds x="275" y="290" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0cwnmki_di" bpmnElement="StartEvent_SubProcessEventsErrorEventSubprocess">
+        <dc:Bounds x="185" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="161" y="355" width="88" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1qf5dbx_di" bpmnElement="Flow_1qf5dbx">
+        <di:waypoint x="375" y="330" />
+        <di:waypoint x="437" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qt8agg_di" bpmnElement="Flow_0qt8agg">
+        <di:waypoint x="221" y="330" />
+        <di:waypoint x="275" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1swm9hk_di" bpmnElement="Flow_1swm9hk">
+        <di:waypoint x="218" y="100" />
+        <di:waypoint x="270" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16c9vud_di" bpmnElement="Flow_16c9vud">
+        <di:waypoint x="370" y="100" />
+        <di:waypoint x="422" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
